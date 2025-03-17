@@ -1,13 +1,14 @@
-  // SideScroller by haje-aatg (Hans-ChristianBJensen)
+// SideScroller by haje-aatg (Hans-ChristianBJensen)
 // An assignment template for a 2D array containing objects
 // Contains no comments, since the student needs to make these
-// 
+//
 // Link: https://github.com/haje-aatg/2DTemplateSideScroller
 
 class Player extends WorldObject {
-  
-  PVector position = new PVector(int(random(4,59)),40);
-  
+
+  int xPos = int(random(4, 59));
+  int yPos = 20;
+
   Player() {
     super();
     worldObjectColor = color(255, 0, 0);
@@ -30,32 +31,23 @@ class Player extends WorldObject {
      }*/
     PVector sumDirection = new PVector(0, 0);
     if (downCodedKeys[38]) {
-      direction = new PVector(0, -1);
-      sumDirection.add(direction);
-      if (worldOne[int(player.place.x)][int(player.place.y-1)].passable && tJump) {
-        place.add(direction);
-      }
+      player.yPos -= 1;
     }
     if (downCodedKeys[40] ) {
       direction = new PVector(0, 1);
       sumDirection.add(direction);
     }
     if (downCodedKeys[37]) {
-      direction = new PVector(-1, 0);
-      sumDirection.add(direction);
-      if (int(player.place.x-1)>=0) {
-        if (worldOne[int(player.place.x-1)][int(player.place.y)].passable) {
-          place.add(direction);
-        }
+      if (player.xPos-1 >= 0) {
+
+        //if (worldOne[player.xPos-1][player.yPos].passable){
+        player.xPos -= 1;
+        //}
       }
     }
     if (downCodedKeys[39]) {
-      direction = new PVector(1, 0);
-      sumDirection.add(direction);
-      if (int(player.place.x)<worldOne.length-1) {
-        if (worldOne[int(player.place.x+1)][int(player.place.y)].passable) {
-          place.add(direction);
-        }
+      if (player.xPos < worldOne.length-1){
+       player.xPos += 1; 
       }
     }
     if (sumDirection.mag()>0) {

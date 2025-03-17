@@ -15,17 +15,7 @@ class WorldObject {
   WorldObject() {
     squaresize = 10;
     health = byte(random(10, 20));
-    passable = boolean(round(random(0, 1)));
-    
-    
-    
-    if (passable == false) {
-      worldObjectColor = color(214, 146, 43);
-      destructible = boolean(round(random(0, 1)));
-    } else {
-      worldObjectColor = color(38, 184, 250);
-      destructible=false;
-    }
+
   }
   WorldObject(boolean tempblocked) {
     squaresize = 10;
@@ -52,7 +42,7 @@ class WorldObject {
   }
   void draw() {
     fill(worldObjectColor);
-    square(place.x*squaresize, place.y*squaresize, squaresize);
+    square(player.xPos*squaresize, player.yPos*squaresize, squaresize);
   }
   void attacked(byte tdamage) {
     if (destructible) {

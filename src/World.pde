@@ -8,6 +8,7 @@ class World {
   byte health;
   boolean passable, destructible;
   color worldColor;
+  String type;
   PVector place = new PVector(1, 1);
 
   World() {
@@ -22,14 +23,14 @@ class World {
       destructible=false;
     }
   }
-  World(String type){
+  World(String inputType){
    health = 10;
-   
-   if (type == "sky"){
+   type = inputType;
+   if (inputType == "sky"){
      worldColor = color(38, 184, 250);
-   } else if (type == "ground"){
+   } else if (inputType == "ground"){
      worldColor = color(214*(int(destructible)+1)/2, 146, 43);
-   } else {
+   } else if (inputType == "grass"){
     worldColor = color(0,255,0); 
    }
    
