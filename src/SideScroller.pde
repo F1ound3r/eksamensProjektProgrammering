@@ -40,44 +40,53 @@ void setup() {
   }
 
   int[] heightMap = calculateRoundKey256(seed);
-  
-  
+
+
 
   println(seed);
   println(heightMap);
   // Koordinatsystemet starter øverst til venstre i (0,0).
-  // Højden af spillet er 40. 
-  
+  // Højden af spillet er 40.
+
   int prevXPos = 0;
-  
-  /*
-  Heightmap bliver brugt til at bestemme hvor højt terrain skal være. Det bliver lavet ved at tage summen af fire indexes i heightMap arrayet, og xor dem 
-  med den tidligere x-pos. På den måde fås pænt terrain. Dette ganges med 2 for at lave højere bakker. 
-  */
-  
-  for (int xPos = 0; xPos < 64; xPos++){
-    
+  int[] xPosHeight = new int[64];
+
+  for (int xPos = 0; xPos < 64; xPos++) {
     // Finder summen.
     int sum = heightMap[xPos] + heightMap[xPos + 1] + heightMap[xPos + 2] + heightMap[xPos + 3];
-    
+
     // Finder højden med xor.
     prevXPos ^= sum;
-    
+
     // Finder den største bit i prevXPos og dette bruges til at beregne højden af denne x-pos.
-    int xPosHeight = findMostSignificantBit(prevXPos);
-    
-    for (int yPos = 0; yPos < 40; yPos++){
-      
-      if (yPos > xPosHeight){
-       worldOne[xPos][(yPos-40)*-1-1] = new World("sky");
-      } else if (yPos < xPosHeight){
-       worldOne[xPos][(yPos-40)*-1-1] = new World("ground");
-      } else{
-       worldOne[xPos][(yPos-40)*-1-1] = new World("grass");
-      }
-      //worldOne[xPos][yPos] = new World(); 
+    xPosHeight[xPos] = findMostSignificantBit(prevXPos)*2;
+  }
+  /*
+  Heightmap bliver brugt til at bestemme hvor højt terrain skal være. Det bliver lavet ved at tage summen af fire indexes i heightMap arrayet, og xor dem
+   med den tidligere x-pos. På den måde fås pænt terrain. Dette ganges med 2 for at lave højere bakker.
+   */
+
+  for (int xPos = 0; xPos < 64; xPos++) {
+    int meanXPosHeight;
+
+    if ( xPos == 0) {
+      meanXPosHeight = int((xPosHeight[xPos] + xPosHeight[xPos + 1])/2);
+    } else if (xPos == 63) {
+      meanXPosHeight = int((xPosHeight[xPos - 1] + xPosHeight[xPos])/2);
+    } else {
+      meanXPosHeight = int((xPosHeight[xPos-1] + xPosHeight[xPos] + xPosHeight[xPos + 1])/3);
     }
     
+    for (int yPos = 0; yPos < 40; yPos++) {
+
+      if (yPos > meanXPosHeight) {
+        worldOne[xPos][(yPos-40)*-1-1] = new World("sky");
+      } else if (yPos < meanXPosHeight) {
+        worldOne[xPos][(yPos-40)*-1-1] = new World("ground");
+      } else {
+        worldOne[xPos][(yPos-40)*-1-1] = new World("grass");
+      }
+    }
   }
   for (int xline = squaresize; xline<width; xline+=squaresize) {
 
@@ -86,7 +95,7 @@ void setup() {
   for (int yline = squaresize; yline<height; yline+=squaresize) {
     line(0, yline, width, yline);
   }
-  
+
   frameRate(10);
   println("Finished setup @: " + millis());
 }

@@ -1,3 +1,5 @@
+// Min egen kode taget fra SOP.
+
 int[] calculateRoundKey256(int[] inputList) {
   int antalRunder = 15;
   
