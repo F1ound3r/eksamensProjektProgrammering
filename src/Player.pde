@@ -57,37 +57,17 @@ class Player extends WorldObject {
           
           y *= -1;
           
-          projectilePositions.add(new PVector(i+20, y+380));
+          projectilePositions.add(new PVector(i+xPos*10+10/2, y+yPos*10+10/2));
         }
-        /*
-        Kode der virker ish.
-        
-        // https://u490079.mono.net/upl/website/about-us111/Formelsamlingtildetskrkast11.pdf
-        
-        float y0 = 0;
-        float y;
-        
-        isShooting = true;
-        projectilePositions.clear(); // Ryd tidligere projektiler
-        for (int i = -400/2; i < 40*10; i += 10) {
-          
-          y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(i, 2)+tan(angle)+y0;
-          
-          y *= -1;
-          
-          
-          projectilePositions.add(new PVector(i+xPos*10+400/2+10/2, y+yPos*10-90));
-        }
-        */
       } else {
        isShooting = false; 
       }
     }
     if (downCodedKeys[38]) {
-      // Increase angle
+      angle += 0.1;
     }
     if (downCodedKeys[40]) {
-      // Decrease angle
+      angle -= 0.1;
     }
     if (downCodedKeys[37]) { //Move left
       if (player.xPos-1 >= 0) {
