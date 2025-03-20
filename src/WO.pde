@@ -42,6 +42,9 @@ class WorldObject {
   }
   void draw() {
     fill(worldObjectColor);
+    if(worldOne[player.xPos][player.yPos].type != "sky"){
+      player.yPos -= 1;
+    }
     square(player.xPos*squaresize, player.yPos*squaresize, squaresize);
   }
   void attacked(byte tdamage) {

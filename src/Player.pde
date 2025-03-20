@@ -8,7 +8,15 @@ class Player extends WorldObject {
 
   int xPos = int(random(4, 59));
   int yPos = 20;
-
+  float angle = 45.0/360*2*PI;
+  
+  
+  
+  float g = 3; //Tyngdekraften
+  float v0 = 25; //Initialhastigheden
+  ArrayList<PVector> projectilePositions = new ArrayList<PVector>();
+  boolean isShooting = false;
+  
   Player() {
     super();
     worldObjectColor = color(255, 0, 0);
@@ -24,39 +32,81 @@ class Player extends WorldObject {
       println(" .Now: " + place);
     }
   }
-  void action(boolean tJump) {
-    /*for (int index =50; index<100; index++) {//downCodedKeys.length
-     //println(index + " : " + downCodedKeys[index]);
-     println(index + " : " + downKeys[index]);
-     }*/
-    PVector sumDirection = new PVector(0, 0);
-    if (downCodedKeys[38]) {
-      player.yPos -= 1;
-    }
-    if (downCodedKeys[40] ) {
-      direction = new PVector(0, 1);
-      sumDirection.add(direction);
-    }
-    if (downCodedKeys[37]) {
-      if (player.xPos-1 >= 0) {
+  void draw(float x, float y) {
+    circle(x, y, 10);
+  }
+  void action(boolean availableToDoAction) {
 
-        //if (worldOne[player.xPos-1][player.yPos].passable){
-        player.xPos -= 1;
-        //}
+    if (downKeys[32]) { // Shoot
+      if (availableToDoAction == true && !isShooting) {
+        // https://u490079.mono.net/upl/website/about-us111/Formelsamlingtildetskrkast11.pdf
+        /*
+        float y0 = 40-yPos;
+        int x0 = 64-xPos;
+        float y = y0;
+        */
+        
+        float y0 = 0;
+        float y;
+        
+        isShooting = true;
+        projectilePositions.clear(); // Ryd tidligere projektiler
+        for (int i = 0; i < 40*10; i += 10) {
+          
+          y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(i, 2)+tan(angle)*i+y0;
+          
+          y *= -1;
+          
+          projectilePositions.add(new PVector(i+20, y+380));
+        }
+        /*
+        Kode der virker ish.
+        
+        // https://u490079.mono.net/upl/website/about-us111/Formelsamlingtildetskrkast11.pdf
+        
+        float y0 = 0;
+        float y;
+        
+        isShooting = true;
+        projectilePositions.clear(); // Ryd tidligere projektiler
+        for (int i = -400/2; i < 40*10; i += 10) {
+          
+          y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(i, 2)+tan(angle)+y0;
+          
+          y *= -1;
+          
+          
+          projectilePositions.add(new PVector(i+xPos*10+400/2+10/2, y+yPos*10-90));
+        }
+        */
+      } else {
+       isShooting = false; 
       }
     }
-    if (downCodedKeys[39]) {
-      if (player.xPos < worldOne.length-1){
-       player.xPos += 1; 
+    if (downCodedKeys[38]) {
+      // Increase angle
+    }
+    if (downCodedKeys[40]) {
+      // Decrease angle
+    }
+    if (downCodedKeys[37]) { //Move left
+      if (player.xPos-1 >= 0) {
+        if (worldOne[player.xPos-1][player.yPos].passable) {
+          player.xPos -= 1;
+        } else if (worldOne[player.xPos-1][player.yPos-1].passable) {
+          player.xPos -= 1;
+          player.yPos -= 1;
+        }
       }
     }
-    if (sumDirection.mag()>0) {
-      direction=sumDirection;
-    }
-    if (downCodedKeys[69]) {
-      if (int(place.x+direction.x) >= 0 && int(place.x+direction.x) <= worldOne.length-1 && int(place.y+direction.y) <= worldOne[0].length-1) {
-        print("Attacking! " + direction);
-        worldOne[int(place.x+direction.x)][int(place.y+direction.y)].attacked(byte(1));
+    if (downCodedKeys[39]) { // Move right
+      if (player.xPos < worldOne.length-1) {
+        if (worldOne[player.xPos+1][player.yPos].passable) {
+          player.xPos += 1;
+        } else if (worldOne[player.xPos+1][player.yPos-1].passable) {
+          player.xPos += 1;
+          player.yPos -= 1;
+        }
       }
     }
   }

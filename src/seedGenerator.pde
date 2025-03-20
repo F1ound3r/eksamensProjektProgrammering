@@ -84,7 +84,7 @@ int[] calculateRoundKey256(int[] inputList) {
       expandedKey[i*32+copy+60] = word15[copy];
     }
   }
-  println(expandedKey);
+  //println(expandedKey);
   return expandedKey;
 }
 int[] keyExpansionCore(int[] inputList, int iteration) {

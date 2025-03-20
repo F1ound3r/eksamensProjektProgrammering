@@ -18,13 +18,17 @@ int squaresize = 10;
 boolean[] downKeys = new boolean[256];
 boolean[] downCodedKeys = new boolean[256];
 
+
+
 void setup() {
   // Bredden af spillet er 40.
   // Højden er 64, da seedet bliver udvidet til 256 bits, og dermed 256/4 = 64
   size(640, 400);
   background(0);
-  fill(255);
-  stroke(255);
+  //fill(255);
+  //stroke(255); //Hvide outlines
+  noStroke(); // Fjerner outlines fra squares.
+
   // Koordinatsystemet starter øverst til venstre i (0,0).
 
 
@@ -83,20 +87,20 @@ void setup() {
       }
     }
   }
-
-  for (int xline = squaresize; xline<width; xline+=squaresize) {
-    line(xline, 0, xline, height);
-  }
-  for (int yline = squaresize; yline<height; yline+=squaresize) {
-    line(0, yline, width, yline);
-  }
+  /*
+for (int xline = squaresize; xline<width; xline+=squaresize) {
+   line(xline, 0, xline, height);
+   }
+   for (int yline = squaresize; yline<height; yline+=squaresize) {
+   line(0, yline, width, yline);
+   }
+   */
 
   frameRate(10);
   println("Finished setup @: " + millis());
 }
 
 void draw() {
-
   if (player.yPos<worldOne[0].length-1) {
     if (worldOne[player.xPos][player.yPos+1].type == "sky") {
       player.action(false);
@@ -111,46 +115,20 @@ void draw() {
     // Skal ændres.
     background(255, 0, 0);
   } else {
-    for (int xPos = 0; xPos < worldOne.length; xPos++){
-      for (int yPos = 0; yPos < worldOne[0].length; yPos++){
+    for (int xPos = 0; xPos < worldOne.length; xPos++) {
+      for (int yPos = 0; yPos < worldOne[0].length; yPos++) {
         worldOne[xPos][yPos].draw(xPos, yPos, squaresize);
       }
     }
-    player.draw();
-  }
-
-  /*
-  if (player.place.y<worldOne[0].length-1) {
-   if (player.falling(worldOne[int(player.place.x)][int(player.place.y+1)].passable)) {
-   player.action(false);
-   } else {
-   player.action(true);
-   }
-   } else {
-   player.health = 0;
-   }
-   
-  if (player.isDead()) {
-    background(255, 0, 0);
-  } else {
-    for (int xdir = 0; xdir<worldOne.length; xdir++) {
-      for (int ydir = 0; ydir<worldOne[0].length; ydir++) {
-        worldOne[xdir][ydir].draw(xdir, ydir, squaresize);
-
-        if (ydir+1 < worldOne[0].length) {
-
-          if (worldOne[xdir][ydir].falling(worldOne[xdir][ydir+1].passable)) {
-            worldOne[xdir][ydir].falling(true);
-          } else {
-            worldOne[xdir][ydir].falling(false);
-          }
-        }
-        worldOne[xdir][ydir].draw();
+    if (player.isShooting) {
+      fill(0);
+      for (PVector pos : player.projectilePositions) {
+        player.draw(pos.x, pos.y); // Brug din cirkel-tegnemetode
+        println("x: " + pos.x + " y: " + pos.y);
       }
     }
     player.draw();
   }
-  */
 }
 
 void keyPressed() {
