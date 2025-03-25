@@ -68,6 +68,20 @@ class World {
     passable = tempblocked;
     destructible = tempblocked;
   }
+  void beenHit(String inputType){
+    type = inputType;
+   if (inputType == "sky"){
+     worldColor = color(38, 184, 250);
+     passable = true;
+   } else if (inputType == "ground"){
+     worldColor = color(124,100,0);
+     passable = false;
+   } else if (inputType == "grass"){
+    worldColor = color(65,210,10); 
+    passable = false;
+   }
+  }
+  
   boolean falling(boolean tpassable) {
     //println(tpassable);
     if (tpassable) {
@@ -78,7 +92,8 @@ class World {
     }
   }
   void draw(int tempXdir, int tempYdir, int tempSquaresize) {
-    fill(worldColor, 255*(10-(health%10)));
+    //fill(worldColor, 255*(10-(health%10)));
+    fill(worldColor);
     square(tempXdir*tempSquaresize, tempYdir*tempSquaresize, tempSquaresize);
   }
   void draw() {

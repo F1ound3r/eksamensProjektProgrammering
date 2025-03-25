@@ -1,7 +1,7 @@
 //  SideScroller by haje-aatg (Hans-ChristianBJensen)
 // An assignment template for a 2D array containing objects
 // Contains no comments, since the student needs to make these
-// 
+//
 // Link: https://github.com/haje-aatg/2DTemplateSideScroller
 
 class WorldObject {
@@ -15,7 +15,6 @@ class WorldObject {
   WorldObject() {
     squaresize = 10;
     health = byte(random(10, 20));
-
   }
   WorldObject(boolean tempblocked) {
     squaresize = 10;
@@ -23,7 +22,7 @@ class WorldObject {
     passable = tempblocked;
     destructible = tempblocked;
   }
-  WorldObject(boolean tempblocked,PVector tempPlace, color tempWorldObjectColor) {
+  WorldObject(boolean tempblocked, PVector tempPlace, color tempWorldObjectColor) {
     squaresize = 10;
     health = byte(random(10, 20));
     place = tempPlace;
@@ -40,13 +39,7 @@ class WorldObject {
       return false;
     }
   }
-  void draw() {
-    fill(worldObjectColor);
-    if(worldOne[player.xPos][player.yPos].type != "sky"){
-      player.yPos -= 1;
-    }
-    square(player.xPos*squaresize, player.yPos*squaresize, squaresize);
-  }
+  
   void attacked(byte tdamage) {
     if (destructible) {
       health-=tdamage;

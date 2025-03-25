@@ -17,6 +17,7 @@ Player player = new Player();
 int squaresize = 10;
 boolean[] downKeys = new boolean[256];
 boolean[] downCodedKeys = new boolean[256];
+int[] heightMap = new int[64];
 
 
 
@@ -39,14 +40,14 @@ void setup() {
   for (int i = 0; i < seed.length; i++) {
     seed[i] = int(random(255));
   }
-  int[] heightMap = calculateRoundKey256(seed);
+  int[] initialHeightMap = calculateRoundKey256(seed);
 
   int prevXPos = 0;
   int[] xPosHeight = new int[64];
 
   for (int xPos = 0; xPos < 64; xPos++) {
     // Finder summen.
-    int sum = heightMap[xPos] + heightMap[xPos + 1] + heightMap[xPos + 2] + heightMap[xPos + 3];
+    int sum = initialHeightMap[xPos] + initialHeightMap[xPos + 1] + initialHeightMap[xPos + 2] + initialHeightMap[xPos + 3];
 
     // Finder højden med xor.
     prevXPos ^= sum;
@@ -55,7 +56,7 @@ void setup() {
     xPosHeight[xPos] = findMostSignificantBit(prevXPos)*2;
   }
   /*
-  Heightmap bliver brugt til at bestemme hvor højt terrain skal være. Det bliver lavet ved at tage summen af fire indexes i heightMap arrayet, og xor dem
+  initialHeightMap bliver brugt til at bestemme hvor højt terrain skal være. Det bliver lavet ved at tage summen af fire indexes i initialHeightMap arrayet, og xor dem
    med den tidligere x-pos. På den måde fås pænt terrain. Dette ganges med 2 for at lave højere bakker.
    */
 
@@ -83,6 +84,7 @@ void setup() {
       } else if (yPos < meanXPosHeight) {
         worldOne[xPos][(yPos-40)*-1-1] = new World("ground");
       } else {
+        heightMap[xPos] = meanXPosHeight;
         worldOne[xPos][(yPos-40)*-1-1] = new World("grass");
       }
     }
@@ -115,17 +117,51 @@ void draw() {
     // Skal ændres.
     background(255, 0, 0);
   } else {
+
     for (int xPos = 0; xPos < worldOne.length; xPos++) {
       for (int yPos = 0; yPos < worldOne[0].length; yPos++) {
         worldOne[xPos][yPos].draw(xPos, yPos, squaresize);
       }
     }
-    if (player.isShooting) {
-      fill(0);
-      for (PVector pos : player.projectilePositions) {
-        player.draw(pos.x, pos.y); // Brug din cirkel-tegnemetode
-        println("x: " + pos.x + " y: " + pos.y);
+
+    if (player.projectilePositions.size() > 0) {
+      if (player.projectilePositions.size() == 1) {
+
+        int hitX = int(player.projectilePositions.get(0).x/10);
+        int hitY = int(player.projectilePositions.get(0).y/10);
+
+        // Sætter dem ved siden af til at være sky for at vise at noget er gået i stykker.
+
+        for (int x = -1; x < 2; x++) { 
+          for (int y = -1; y < 2; y++) {
+            worldOne[hitX+x][hitY+y].beenHit("sky");
+          }
+        }
+      } else {
+        println("Top");
+        println(player.projectilePositions.size());
+        fill(0);
+        for (PVector pos : player.projectilePositions) {
+          println(pos);
+        }
+        player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
+        println(player.projectilePositions.get(0).x);
+        println(player.projectilePositions.get(0).y);
+        println(player.projectilePositions.size());
+        player.projectilePositions.remove(0);
+        println(player.projectilePositions.size());
       }
+    }
+
+    if (player.isShooting) {
+      //fill(0);
+      //player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
+      //player.projectilePositions.remove(0);
+      /*
+      for (PVector pos : player.projectilePositions) {
+       player.draw(pos.x, pos.y); // tegn firkant
+       }
+       */
     }
     player.draw();
   }
