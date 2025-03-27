@@ -28,7 +28,7 @@ void setup() {
   background(0);
   //fill(255);
   //stroke(255); //Hvide outlines
-  noStroke(); // Fjerner outlines fra squares.
+  //noStroke(); // Fjerner outlines fra squares.
 
   // Koordinatsystemet starter øverst til venstre i (0,0).
 
@@ -131,18 +131,29 @@ void draw() {
         int hitY = int(player.projectilePositions.get(0).y/10);
 
         // Sætter dem ved siden af til at være sky for at vise at noget er gået i stykker.
-
-        for (int x = -1; x < 2; x++) { 
+        println("hitting");
+        /*
+        println(hitX);
+         println(hitY);
+         println(player.xPos);
+         println(player.yPos);
+         */
+        println(worldOne[hitX][hitY].type);
+        for (int x = -1; x < 2; x++) {
           for (int y = -1; y < 2; y++) {
-            worldOne[hitX+x][hitY+y].beenHit("sky");
+            if (hitY+y > 39) {
+            } else {
+              worldOne[hitX+x][hitY+y].beenHit("sky");
+            }
           }
         }
+        player.projectilePositions.clear();
       } else {
-        println("Top");
-        println(player.projectilePositions.size());
+        //println("Topelse");
+        //println(player.projectilePositions.size());
         fill(0);
         for (PVector pos : player.projectilePositions) {
-          println(pos);
+          //println(pos);
         }
         player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
         println(player.projectilePositions.get(0).x);
@@ -154,14 +165,13 @@ void draw() {
     }
 
     if (player.isShooting) {
-      //fill(0);
-      //player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
-      //player.projectilePositions.remove(0);
-      /*
+      fill(0);
+
+      player.projectilePositions.remove(0);
+
       for (PVector pos : player.projectilePositions) {
-       player.draw(pos.x, pos.y); // tegn firkant
-       }
-       */
+        player.draw(pos.x, pos.y); // tegn firkant
+      }
     }
     player.draw();
   }
