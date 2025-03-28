@@ -82,62 +82,46 @@ class Player extends WorldObject {
   void shoot() {
     int x = 0;
     float y = 0;
-    if (shootingDirection = false) {
-      while (x < 64) {
-        if (x+xPos < 64) {
 
-          y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(x, 2)+abs(tan(angle))*x;
+    while (x < 64) {
+      if (x+xPos < 64 && x+xPos > 0) {
 
-          y = round(y / 10.0) * 10;
+        y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(x, 2)+abs(tan(angle))*x;
 
-          int yIndex = (int) y;
-          y *= -1;
+        y = round(y / 10.0) * 10;
 
-          yIndex = yIndex/10;
+        int yIndex = (int) y;
+        y *= -1;
 
+        yIndex = yIndex/10;
+
+        if (!shootingDirection) {
           projectilePositions.add(new PVector(x*10+xPos*10, (39-yIndex)*10-(40-yPos)*10));
-
-          try {
-            //println("worldOne[x + xPos][39-yIndex-(40-yPos)].type: " + (worldOne[x + xPos][39-yIndex-(40-yPos)].type));
-            if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
-              break;
-            }
+          if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
+            break;
           }
-          catch (Exception e) {
-            println(e);
+        } else if (shootingDirection) {
+          projectilePositions.add(new PVector((64-x*10+xPos*10-65), (39-yIndex)*10-(40-yPos)*10));
+          if (worldOne[64-(x + xPos)][39-yIndex-(40-yPos)].type == "ground" || worldOne[64-(x + xPos)][39-yIndex-(40-yPos)].type == "grass") {
+            break;
           }
+        } else {
+          println("something went very wrong with shootingDirection boolean.");
         }
-        x++;
+
+        /*
+        try {
+         //println("worldOne[x + xPos][39-yIndex-(40-yPos)].type: " + (worldOne[x + xPos][39-yIndex-(40-yPos)].type));
+         if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
+         break;
+         }
+         }
+         catch (Exception e) {
+         println(e);
+         }
+         */
       }
-    } else if (shootingDirection = true){
-      while (x < 64) {
-        if (x+xPos < 64) {
-
-          y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(x, 2)+abs(tan(angle))*x;
-
-          y = round(y / 10.0) * 10;
-
-          int yIndex = (int) y;
-          y *= -1;
-
-          yIndex = yIndex/10;
-
-          projectilePositions.add(new PVector(x*10+xPos*10, (39-yIndex)*10-(40-yPos)*10));
-
-          try {
-            //println("worldOne[x + xPos][39-yIndex-(40-yPos)].type: " + (worldOne[x + xPos][39-yIndex-(40-yPos)].type));
-            if (worldOne[64-((x + xPos))][39-yIndex-(40-yPos)].type == "ground" || worldOne[64-((x + xPos))][39-yIndex-(40-yPos)].type == "grass") {
-              break;
-            }
-          }
-          catch (Exception e) {
-            println(e);
-          }
-        }
-        x++;
-      }
-    } else {
-     println("something went wrong with shooting direction boolean"); 
+      x++;
     }
   }
   void action(boolean availableToDoAction) {

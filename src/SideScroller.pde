@@ -138,18 +138,41 @@ void draw() {
          println(player.xPos);
          println(player.yPos);
          */
-        println(worldOne[hitX][hitY].type);
-        for (int x = -1; x < 2; x++) {
+
+        if (hitX > 63 && hitX > -1) {
+        } else {
+          println(worldOne[hitX][hitY].type);
+        }
+        println(hitX);
+        println(hitY);
+        if (hitX-1 > 63 && hitX-1 > -1) {
           for (int y = -1; y < 2; y++) {
-            if (hitY+y > 39) {
-            } else {
-              if (hitX+x > 63) {
-              } else {
-                worldOne[hitX+x][hitY+y].beenHit("sky");
-              }
-            }
+            worldOne[hitX-1][hitY+y].beenHit("sky");
           }
         }
+        for (int y = -1; y < 2; y++) {
+          worldOne[hitX][hitY+y].beenHit("sky");
+        }
+        if (hitX+1 < 63 && hitX-1 > -1){
+         for (int y = -1; y < 2; y++){
+           worldOne[hitX+1][hitY+y].beenHit("sky");
+         }
+        }
+
+        //It is possible to compact the above code to this, tough that means that hit detection will be worse, and therefore made the other way.
+        /*
+        for (int x = -1; x < 2; x++) {
+         for (int y = -1; y < 2; y++) {
+         if (hitY+y > 39) {
+         } else {
+         if (hitX+x > 63 && hitX+x > -1) {
+         } else {
+         worldOne[hitX+x][hitY+y].beenHit("sky");
+         }
+         }
+         }
+         }
+         */
         player.projectilePositions.clear();
       } else {
         //println("Topelse");
