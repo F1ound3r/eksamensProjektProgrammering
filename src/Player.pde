@@ -80,11 +80,12 @@ class Player extends WorldObject {
     square(x, y, 10);
   }
   void shoot() {
+    //https://u490079.mono.net/upl/website/about-us111/Formelsamlingtildetskrkast11.pdf
     int x = 0;
     float y = 0;
 
     while (x < 64) {
-      if (x+xPos < 64 && x+xPos > 0) {
+      if (x+xPos < 64 && x+xPos > -1) {
 
         y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(x, 2)+abs(tan(angle))*x;
 
@@ -97,29 +98,30 @@ class Player extends WorldObject {
 
         if (!shootingDirection) {
           projectilePositions.add(new PVector(x*10+xPos*10, (39-yIndex)*10-(40-yPos)*10));
-          if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
+          try {
+            if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
+              break;
+            }
+          }
+          catch (Exception e) {
+            println(e);
             break;
           }
         } else if (shootingDirection) {
           projectilePositions.add(new PVector((64-x*10+xPos*10-65), (39-yIndex)*10-(40-yPos)*10));
-          if (worldOne[64-(x + xPos)][39-yIndex-(40-yPos)].type == "ground" || worldOne[64-(x + xPos)][39-yIndex-(40-yPos)].type == "grass") {
+          try {
+            if (worldOne[64-(x + xPos)][39-yIndex-(40-yPos)].type == "ground" || worldOne[64-(x + xPos)][39-yIndex-(40-yPos)].type == "grass") {
+              break;
+            }
+          }
+          catch (Exception e) {
+            println(e);
+            
             break;
           }
         } else {
           println("something went very wrong with shootingDirection boolean.");
         }
-
-        /*
-        try {
-         //println("worldOne[x + xPos][39-yIndex-(40-yPos)].type: " + (worldOne[x + xPos][39-yIndex-(40-yPos)].type));
-         if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
-         break;
-         }
-         }
-         catch (Exception e) {
-         println(e);
-         }
-         */
       }
       x++;
     }
@@ -128,9 +130,6 @@ class Player extends WorldObject {
 
     if (downKeys[32]) { // Shoot
       if (availableToDoAction == true && !isShooting) {
-        //https://u490079.mono.net/upl/website/about-us111/Formelsamlingtildetskrkast11.pdf
-
-        float y = 0;
 
         isShooting = true;
         projectilePositions.clear(); // Ryd tidligere projektiler
