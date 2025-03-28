@@ -143,7 +143,10 @@ void draw() {
           for (int y = -1; y < 2; y++) {
             if (hitY+y > 39) {
             } else {
-              worldOne[hitX+x][hitY+y].beenHit("sky");
+              if (hitX+x > 63) {
+              } else {
+                worldOne[hitX+x][hitY+y].beenHit("sky");
+              }
             }
           }
         }
@@ -156,22 +159,23 @@ void draw() {
           //println(pos);
         }
         player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
-        println(player.projectilePositions.get(0).x);
-        println(player.projectilePositions.get(0).y);
-        println(player.projectilePositions.size());
+        //println(player.projectilePositions.get(0).x);
+        //println(player.projectilePositions.get(0).y);
+        //println(player.projectilePositions.size());
         player.projectilePositions.remove(0);
-        println(player.projectilePositions.size());
+        //println(player.projectilePositions.size());
       }
     }
 
     if (player.isShooting) {
       fill(0);
 
-      player.projectilePositions.remove(0);
+      //player.projectilePositions.remove(0);
 
-      for (PVector pos : player.projectilePositions) {
-        player.draw(pos.x, pos.y); // tegn firkant
-      }
+      //for (PVector pos : player.projectilePositions) {
+      //println(pos.x + " : " + pos.y);
+      //  player.draw(pos.x, pos.y); // tegn firkant
+      //}
     }
     player.draw();
   }

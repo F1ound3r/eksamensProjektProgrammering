@@ -9,7 +9,7 @@ class Player extends WorldObject {
   int xPos = int(random(4, 59));
   int yPos = 20;
   float angle = 85.0/360*2*PI;
-
+  boolean shootingDirection = false;
 
 
   float g = 10; //Tyngdekraften
@@ -37,9 +37,7 @@ class Player extends WorldObject {
     float y0 = 0;
     float y;
 
-
-
-    if (abs(angle) < PI/2) {
+    if (angle < 1.53) {
       for (int i = 0; i < 5; i += 1) {
 
         y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(i, 2)+tan(angle)*i+y0;
@@ -48,16 +46,11 @@ class Player extends WorldObject {
 
         y *= -1;
 
-
         fill(0);
-        //println(angle);
-        //println(y);
+
         draw(i*10+xPos*10, y+yPos*10);
       }
-    } else if (abs(angle) > PI*1.5) {
-
-      angle = -PI*0.5;
-    } else if (abs(angle) > PI/2) {
+    } else if (angle > 1.60) {
       for (int i = 0; i > -5; i -= 1) {
 
         y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(i, 2)+tan(angle)*i+y0;
@@ -71,6 +64,8 @@ class Player extends WorldObject {
         //println(y);
         draw(i*10+xPos*10, y+yPos*10);
       }
+    } else {
+      println("Something is very wrong in drawing intial shot");
     }
 
 
@@ -81,7 +76,69 @@ class Player extends WorldObject {
     square(player.xPos*squaresize, player.yPos*squaresize, squaresize);
   }
   void draw(float x, float y) {
+    fill(0);
     square(x, y, 10);
+  }
+  void shoot() {
+    int x = 0;
+    float y = 0;
+    if (shootingDirection = false) {
+      while (x < 64) {
+        if (x+xPos < 64) {
+
+          y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(x, 2)+abs(tan(angle))*x;
+
+          y = round(y / 10.0) * 10;
+
+          int yIndex = (int) y;
+          y *= -1;
+
+          yIndex = yIndex/10;
+
+          projectilePositions.add(new PVector(x*10+xPos*10, (39-yIndex)*10-(40-yPos)*10));
+
+          try {
+            //println("worldOne[x + xPos][39-yIndex-(40-yPos)].type: " + (worldOne[x + xPos][39-yIndex-(40-yPos)].type));
+            if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
+              break;
+            }
+          }
+          catch (Exception e) {
+            println(e);
+          }
+        }
+        x++;
+      }
+    } else if (shootingDirection = true){
+      while (x < 64) {
+        if (x+xPos < 64) {
+
+          y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(x, 2)+abs(tan(angle))*x;
+
+          y = round(y / 10.0) * 10;
+
+          int yIndex = (int) y;
+          y *= -1;
+
+          yIndex = yIndex/10;
+
+          projectilePositions.add(new PVector(x*10+xPos*10, (39-yIndex)*10-(40-yPos)*10));
+
+          try {
+            //println("worldOne[x + xPos][39-yIndex-(40-yPos)].type: " + (worldOne[x + xPos][39-yIndex-(40-yPos)].type));
+            if (worldOne[64-((x + xPos))][39-yIndex-(40-yPos)].type == "ground" || worldOne[64-((x + xPos))][39-yIndex-(40-yPos)].type == "grass") {
+              break;
+            }
+          }
+          catch (Exception e) {
+            println(e);
+          }
+        }
+        x++;
+      }
+    } else {
+     println("something went wrong with shooting direction boolean"); 
+    }
   }
   void action(boolean availableToDoAction) {
 
@@ -93,53 +150,30 @@ class Player extends WorldObject {
 
         isShooting = true;
         projectilePositions.clear(); // Ryd tidligere projektiler
-        int x = 0;
 
-        while (x < 64) {
-          if (x+xPos < 64) {
-
-            y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(x, 2)+abs(tan(angle))*x;
-
-            y = round(y / 10.0) * 10;
-
-            y *= -1;
-
-            println("top");
-            println("40-yPos: " + (40-yPos));
-            println("y: " + y);
-
-            int yIndex = (int) y;
-            //yIndex *= -1;
-            yIndex = yIndex/10;
-
-            for (int i = 39; i >= 0; i--) {
-              println(x+xPos);
-              println(yIndex);
-              println(40-yPos);
-              println(39-yIndex-(40-yPos));
-
-              if (worldOne[x + xPos][i].type == "sky") {
-                if (yIndex > i) {
-                  projectilePositions.add(new PVector(x*10+xPos*10, y+yPos*10-(i+1)*10));
-                  println("yippie1");
-                  break;
-                } else {
-                  projectilePositions.add(new PVector(x*10+xPos*10, y+yPos*10));
-                }
-              }
-            }
-          }
-          x++;
-        }
+        shoot();
       } else {
         isShooting = false;
       }
     }
+
+
+
     if (downCodedKeys[38]) {
       angle += 0.01;
+
+      if (angle > 1.52 && angle < 1.54) {
+        angle = 1.61;
+        shootingDirection = true;
+      }
     }
     if (downCodedKeys[40]) {
       angle -= 0.01;
+
+      if (angle > 1.58 && angle < 1.63) {
+        angle = 1.52;
+        shootingDirection = false;
+      }
     }
     if (downCodedKeys[37]) { //Move left
       if (player.xPos-1 >= 0) {
@@ -163,93 +197,3 @@ class Player extends WorldObject {
     }
   }
 }
-/*
-while (x < 64) {
-          if (x+xPos < 64) {
-            println("top");
-            println("40-yPos: " + (40-yPos));
-            println("y: " + y);
-            //println("heightMap: " + heightMap[x+xPos]);
-
-
-
-            
-
-            y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(x, 2)+abs(tan(angle))*x;
-
-            println("round");
-            println("y: " + y);
-            y = round(y / 10.0) * 10;
-            println("y: " + y);
-
-            y *= -1;
-
-            println("testing");
-            println("y: " + y);
-            int yIndex = (int) y;
-            yIndex *= -1;
-            yIndex = yIndex /10;
-            println("yIndex: " + yIndex);
-            println("40-yIndex: " + (40-yIndex));
-            println("39-yIndex: " + (39-yIndex));
-
-            println("x+xPos: " + (x+xPos));
-            println("[39-yIndex-(40-yPos): " + (39-yIndex-(40-yPos)));
-            try {
-              println("try");
-              println(worldOne[x + xPos][39-yIndex-(40-yPos)].type);
-            }
-            catch (Exception e) {
-              e.printStackTrace();
-              yIndex = -40+yPos; // Taget 39 = 39-yIndex-(40-yPos) og isoleret for yIndex.
-              println("exception");
-              println("yindex: " + yIndex);
-              println(yPos);
-              println(39-yIndex-(40-yPos));
-
-
-              for (int i = 39; i >= 0; i--) {
-                if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
-                } else {
-                  println("output: " + (yIndex*10+yPos*10-(i+1)*10));
-                  println("push1");
-                  projectilePositions.add(new PVector(x*10+xPos*10, y+yPos*10-(i+1)*10));
-                  println("yippie1");
-                  break;
-                }
-              }
-              println("yippie2");
-              break;
-            }
-
-
-            if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
-              //extraYIndex = 0;
-
-
-              println("stof");
-              for (int i = 39; i > -1; i--) {
-                if (worldOne[x + xPos][39-yIndex-(40-yPos)].type == "ground" || worldOne[x + xPos][39-yIndex-(40-yPos)].type == "grass") {
-                } else {
-                  println("output: " + (yIndex*10+yPos*10-(i+1)*10));
-                  println("push2");
-                  projectilePositions.add(new PVector(x*10+xPos*10, y+yPos*10-i*10-10));
-                  println("yippie3");
-                  break;
-                }
-              }
-
-              println("push3");
-              println("output: " + (y+yPos*10));
-              projectilePositions.add(new PVector(x*10+xPos*10, y+yPos*10));
-
-              break;
-            }
-          }
-          println("push4");
-          println("output: " + (y+yPos*10-extraYIndex*10));
-          projectilePositions.add(new PVector(x*10+xPos*10, y+yPos*10));
-
-          x++;
-        }
-*/
