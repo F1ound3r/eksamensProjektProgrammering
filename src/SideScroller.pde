@@ -17,13 +17,12 @@ Player player = new Player();
 int squaresize = 10;
 boolean[] downKeys = new boolean[256];
 boolean[] downCodedKeys = new boolean[256];
-int[] heightMap = new int[64];
-
+int amountOfGoalsLeft = 3; // Between 1 and 6. If any other number there can appear spawn bugs. 
 
 
 void setup() {
-  // Bredden af spillet er 40.
-  // Højden er 64, da seedet bliver udvidet til 256 bits, og dermed 256/4 = 64
+  // Højden af spillet er 40.
+  // Bredden er 64, da seedet bliver udvidet til 256 bits, og dermed 256/4 = 64
   size(640, 400);
   background(0);
   //fill(255);
@@ -34,7 +33,7 @@ void setup() {
 
 
   worldOne = new World[64][40];  //x , y
-  println("Dungeon size is: " + worldOne.length + " in x direction &: " + worldOne[0].length + " in y direction");
+  println("World size is: " + worldOne.length + " in x direction &: " + worldOne[0].length + " in y direction");
 
   int[] seed = new int[32];
   for (int i = 0; i < seed.length; i++) {
@@ -62,7 +61,8 @@ void setup() {
 
   float twoOutWeight = 0.2;
   float oneOutWeight = 0.8;
-
+  int[] heightMap = new int[64];
+  
   for (int xPos = 0; xPos < 64; xPos++) {
     int meanXPosHeight;
 
@@ -77,6 +77,8 @@ void setup() {
     } else {
       meanXPosHeight = int((xPosHeight[xPos - 2]*twoOutWeight + xPosHeight[xPos - 1]*oneOutWeight + xPosHeight[xPos] + xPosHeight[xPos + 1]*oneOutWeight + xPosHeight[xPos + 2]*twoOutWeight)/5);
     }
+    
+    heightMap[xPos] = meanXPosHeight;
 
     for (int yPos = 0; yPos < 40; yPos++) {
       if (yPos > meanXPosHeight) {
@@ -89,6 +91,20 @@ void setup() {
       }
     }
   }
+  // Goal spawning code:
+  // There has been subtracted 2 pixels from each side. Therefore the total width of the spawning area is 60.
+  int totalSpawnWidth = 60;
+  // This needs to be split into equal sizes.
+  int spawnWidth = totalSpawnWidth/amountOfGoalsLeft;
+  
+  for (int i = 0; i < amountOfGoalsLeft; i++){
+   
+   int randomXValue = 2+int(random(i*spawnWidth,(i+1)*spawnWidth));
+   int randomYValue = 38-int(random(1,heightMap[randomXValue]));
+   
+   worldOne[randomXValue][randomYValue] = new World("goal");
+  }
+
   /*
 for (int xline = squaresize; xline<width; xline+=squaresize) {
    line(xline, 0, xline, height);
@@ -132,14 +148,9 @@ void draw() {
 
         // Sætter dem ved siden af til at være sky for at vise at noget er gået i stykker.
         println("hitting");
-        /*
-        println(hitX);
-         println(hitY);
-         println(player.xPos);
-         println(player.yPos);
-         */
         println(hitX);
         println(hitY);
+        
         if (hitX > 63 && hitX < -1) {
 
 
@@ -147,23 +158,6 @@ void draw() {
             println(worldOne[hitX][hitY].type);
           }
         }
-
-
-        /*if (hitX-1 > 63 && hitX-1 > -1) {
-         for (int y = -1; y < 2; y++) {
-         worldOne[hitX-1][hitY+y].beenHit("sky");
-         }
-         }
-         for (int y = -1; y < 2; y++) {
-         worldOne[hitX][hitY+y].beenHit("sky");
-         }
-         if (hitX+1 < 63 && hitX-1 > -1){
-         for (int y = -1; y < 2; y++){
-         worldOne[hitX+1][hitY+y].beenHit("sky");
-         }
-         }
-         */
-        //It is possible to compact the above code to this, tough that means that hit detection will be worse, and therefore made the other way.
 
         for (int x = -1; x < 2; x++) {
           for (int y = -1; y < 2; y++) {
@@ -204,6 +198,9 @@ void draw() {
       //}
     }
     player.draw();
+  }
+  if (amountOfGoalsLeft == 0){
+   println("YOU WIN :D"); 
   }
 }
 

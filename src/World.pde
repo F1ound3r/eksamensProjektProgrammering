@@ -35,6 +35,9 @@ class World {
    } else if (inputType == "grass"){
     worldColor = color(65,210,10); 
     passable = false;
+   } else if (inputType == "goal"){
+    worldColor = color(255,255,0);
+    passable = false;
    }
    
   }
@@ -63,13 +66,17 @@ class World {
     }
     */
   }
-  World(boolean tempblocked) {
-    health = 10;
-    passable = tempblocked;
-    destructible = tempblocked;
-  }
+  
   void beenHit(String inputType){
-    type = inputType;
+    // Firstly checks if the original type was a goal, because that needs to be noted. 
+   if (type == "goal"){
+    amountOfGoalsLeft -= 1; 
+   } 
+   
+   // When that has been noted the changing of the type can resume. 
+   
+   type = inputType;
+   
    if (inputType == "sky"){
      worldColor = color(38, 184, 250);
      passable = true;
@@ -80,16 +87,7 @@ class World {
     worldColor = color(65,210,10); 
     passable = false;
    }
-  }
-  
-  boolean falling(boolean tpassable) {
-    //println(tpassable);
-    if (tpassable) {
-      place.add(new PVector(0, 1));
-      return true;
-    } else {
-      return false;
-    }
+   
   }
   void draw(int tempXdir, int tempYdir, int tempSquaresize) {
     //fill(worldColor, 255*(10-(health%10)));
@@ -99,23 +97,5 @@ class World {
   void draw() {
     fill(worldColor);
     square(place.x*squaresize, place.y*squaresize, squaresize);
-  }
-  void attacked(byte tdamage) {
-    if (destructible) {
-      health-=tdamage;
-    }
-    if (isDead()) {
-      passable = true;
-      destructible=false;
-      worldColor = color(38, 184, 250);
-    }
-    println("Attacked World. Destructible: "+destructible+". Health left: " + health);
-  }
-  boolean isDead() {
-    if (health>0) {
-      return false;
-    } else {
-      return true;
-    }
   }
 }
