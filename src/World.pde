@@ -11,7 +11,7 @@ class World {
   String type;
   PVector place = new PVector(1, 1);
 
-  World(String inputType) { // Constructor that takes the objects ty
+  World(String inputType) { // Constructor that takes the objects type to make the correct object. 
     health = 10;
     type = inputType;
     if (inputType == "sky") {

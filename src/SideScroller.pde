@@ -29,10 +29,9 @@ void setup() {
   size(640, 400);
   background(0);
   frameRate(15);
-  textAlign(CENTER);
   squaresize = 10;
   noStroke(); // Removes the outlines from squares.
-  amountOfGoalsLeft = 1; // Between 1 and 6. If any other number there can appear spawn bugs.
+  amountOfGoalsLeft = 1; // Between 1 and 6. If any other number there can appear spawn bugs. IE goals can spawn atop of eachother and its not possible to win.
   // Koordinatsystemet starter øverst til venstre i (0,0).
   worldOne = new World[64][40];  //x , y
 
@@ -145,6 +144,7 @@ void draw() {
     // Make the background red to show that the player is dead. Also write that in text.
     background(255, 0, 0);
     fill(255);
+    textAlign(CENTER);
     textSize(40);
     text("You died, try again", width/2, height/2);
     textSize(20);
@@ -195,6 +195,7 @@ void draw() {
   // The win condition
   if (amountOfGoalsLeft == 0) {
     background(255, 255, 0);
+    textAlign(CENTER);
     fill(0);
     textSize(40);
     text("You have won the game", width/2, height/2);
@@ -204,7 +205,7 @@ void draw() {
 }
 
 
-// HAJE code for checking what key on the keyboard is pressed. 
+// HAJE code for checking what key on the keyboard is pressed.
 void keyPressed() {
   if (key == CODED) {
     //print("Code: " + keyCode + ". ");

@@ -1,4 +1,5 @@
-// Min egen kode taget fra SOP.
+// My own code taken from my SOP assignment. 
+// Therefore the comments are in danish. 
 
 int[] calculateRoundKey256(int[] inputList) {
   int antalRunder = 15;
