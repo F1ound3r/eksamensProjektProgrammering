@@ -11,83 +11,41 @@ class World {
   String type;
   PVector place = new PVector(1, 1);
 
-  World() {
+  World(String inputType) { // Constructor that takes the objects ty
     health = 10;
-    passable = boolean(round(random(0, 1)));
-    if (passable == false) {
-      destructible = random(0, 100)>15 ? true : false;
-
-      worldColor = color(214, 146, 43);
-    } else {
+    type = inputType;
+    if (inputType == "sky") {
       worldColor = color(38, 184, 250);
-      destructible=false;
-    }
-  }
-  World(String inputType){
-   health = 10;
-   type = inputType;
-   if (inputType == "sky"){
-     worldColor = color(38, 184, 250);
-     passable = true;
-   } else if (inputType == "ground"){
-     worldColor = color(124,100,0);
-     passable = false;
-   } else if (inputType == "grass"){
-    worldColor = color(65,210,10); 
-    passable = false;
-   } else if (inputType == "goal"){
-    worldColor = color(255,255,0);
-    passable = false;
-   }
-   
-  }
-  World(int wHeight, int bHeight) {
-    health = 10;
-    
-    passable = false;
-    destructible = false;
-    worldColor = color(214*(int(destructible)+1)/2, 146, 43);
-    
-    /*
-    if (bHeight<wHeight*0.1) {
       passable = true;
-      destructible=false;
-      worldColor = color(38, 184, 250);
-    } else {
-      if (random(0, 100)<40) {
-        passable = false;
-        destructible = random(0, 100)>15 ? true : false;
-        worldColor = color(214*(int(destructible)+1)/2, 146, 43);
-      } else {
-        passable = true;
-        destructible=false;
-        worldColor = color(38, 184, 250);
-      }
+    } else if (inputType == "ground") {
+      worldColor = color(124, 100, 0);
+      passable = false;
+    } else if (inputType == "grass") {
+      worldColor = color(65, 210, 10);
+      passable = false;
+    } else if (inputType == "goal") {
+      worldColor = color(255, 255, 0);
+      passable = false;
     }
-    */
   }
-  
-  void beenHit(String inputType){
-    // Firstly checks if the original type was a goal, because that needs to be noted. 
-   if (type == "goal"){
-    amountOfGoalsLeft -= 1; 
-   } 
-   
-   // When that has been noted the changing of the type can resume. 
-   
-   type = inputType;
-   
-   if (inputType == "sky"){
-     worldColor = color(38, 184, 250);
-     passable = true;
-   } else if (inputType == "ground"){
-     worldColor = color(124,100,0);
-     passable = false;
-   } else if (inputType == "grass"){
-    worldColor = color(65,210,10); 
-    passable = false;
-   }
-   
+  void beenHit(String inputType) {
+    // Firstly checks if the original type was a goal, because that needs to be noted.
+    if (type == "goal") {
+      amountOfGoalsLeft -= 1;
+    }
+    // When that has been noted the changing of the type can resume.
+    // New if statement because the code above has to be run every time if its a goal, and the code below.
+
+    if (type != "sky") { // Making sure sky objects are not made to sky objects again. 
+    // Also implemented the posibility to have different kinds of ammo that regenerate soil again. 
+    // Thats the reason for checking the inputType and not just making it sky.
+      type = inputType;
+      if (inputType == "sky") {
+        worldColor = color(38, 184, 250);
+        passable = true;
+      }
+      // Make else if statements here to spawn other objects. 
+    }
   }
   void draw(int tempXdir, int tempYdir, int tempSquaresize) {
     //fill(worldColor, 255*(10-(health%10)));

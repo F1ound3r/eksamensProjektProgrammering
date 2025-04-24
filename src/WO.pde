@@ -1,12 +1,11 @@
-//  SideScroller by haje-aatg (Hans-ChristianBJensen)
+// SideScroller by haje-aatg (Hans-ChristianBJensen)
 // An assignment template for a 2D array containing objects
 // Contains no comments, since the student needs to make these
 //
 // Link: https://github.com/haje-aatg/2DTemplateSideScroller
 
 class WorldObject {
-  byte squaresize, health;
-  //boolean running = true;
+  byte squaresize, health; // Only needs to be a byte because it will not exceed 255. 
   PVector place = new PVector(1, 1);
   PVector direction = new PVector(1, 0);  //float xdir, ydir;
   boolean passable, destructible;
@@ -16,36 +15,7 @@ class WorldObject {
     squaresize = 10;
     health = byte(random(10, 20));
   }
-  WorldObject(boolean tempblocked) {
-    squaresize = 10;
-    health = byte(random(10, 20));
-    passable = tempblocked;
-    destructible = tempblocked;
-  }
-  WorldObject(boolean tempblocked, PVector tempPlace, color tempWorldObjectColor) {
-    squaresize = 10;
-    health = byte(random(10, 20));
-    place = tempPlace;
-    worldObjectColor = tempWorldObjectColor;
-    passable = tempblocked;
-    destructible = tempblocked;
-  }
-  boolean falling(boolean tpassable) {
-    //println(tpassable);
-    if (tpassable) {
-      place.add(new PVector(0, 1));
-      return true;
-    } else {
-      return false;
-    }
-  }
-  
-  void attacked(byte tdamage) {
-    if (destructible) {
-      health-=tdamage;
-    }
-    println("Attacked WO. Health left: " + health);
-  }
+ 
   boolean isDead() {
     if (health>0) {
       return false;

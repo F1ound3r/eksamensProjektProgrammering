@@ -2,67 +2,78 @@
 
  Koden er bygget op med udgangspunkt i taget kode fra:
  
+ The code is build from:
+ 
  SideScroller by haje-aatg (Hans-ChristianBJensen)
  An assignment template for a 2D array containing objects
  Contains no comments, since the student needs to make these
  
  Link: https://github.com/haje-aatg/2DTemplateSideScroller
  
- Til dette er der skrevet egen kode, og brugt noget kode fra SOP. Dette kode ligger i seedGenerator, og er også krediteret.
+ There has also been written own code, and used some code from SOP. That code is in the file seedGenerator, and is also credited in that file.
  
  */
 
 World[][] worldOne;
 Player player = new Player();
-int squaresize = 10;
+int squaresize, amountOfGoalsLeft;
 boolean[] downKeys = new boolean[256];
 boolean[] downCodedKeys = new boolean[256];
-int amountOfGoalsLeft = 3; // Between 1 and 6. If any other number there can appear spawn bugs. 
 
 
 void setup() {
-  // Højden af spillet er 40.
-  // Bredden er 64, da seedet bliver udvidet til 256 bits, og dermed 256/4 = 64
+  // The hegith of the game is 40 pixels.
+  // The width of the game is 64 pixels, because the seed is expanded to 256 bits and 256/4 = 64.
+
+  // Initialize the program
   size(640, 400);
   background(0);
-  //fill(255);
-  //stroke(255); //Hvide outlines
-  noStroke(); // Fjerner outlines fra squares.
-
+  frameRate(15);
+  textAlign(CENTER);
+  squaresize = 10;
+  noStroke(); // Removes the outlines from squares.
+  amountOfGoalsLeft = 1; // Between 1 and 6. If any other number there can appear spawn bugs.
   // Koordinatsystemet starter øverst til venstre i (0,0).
-
-
   worldOne = new World[64][40];  //x , y
-  println("World size is: " + worldOne.length + " in x direction &: " + worldOne[0].length + " in y direction");
 
+  //println("World size is: " + worldOne.length + " in x direction &: " + worldOne[0].length + " in y direction");
+
+  // Generating the 32 random numbers for the seed.
   int[] seed = new int[32];
   for (int i = 0; i < seed.length; i++) {
     seed[i] = int(random(255));
   }
+  // Expanding the seed to get the initial heightmap.
   int[] initialHeightMap = calculateRoundKey256(seed);
 
+
+  // The height at every x-value is calculated by taking the sums of 4 numbers from the extended seed, then xors with the previous number and the height becomes the
+  // most significant bit in number.
   int prevXPos = 0;
   int[] xPosHeight = new int[64];
-
   for (int xPos = 0; xPos < 64; xPos++) {
-    // Finder summen.
+    // Finds the sum
     int sum = initialHeightMap[xPos] + initialHeightMap[xPos + 1] + initialHeightMap[xPos + 2] + initialHeightMap[xPos + 3];
 
-    // Finder højden med xor.
+    // Finds the new number.
     prevXPos ^= sum;
 
-    // Finder den største bit i prevXPos og dette bruges til at beregne højden af denne x-pos.
+    // Finds the most significant bit in prevXPos and this is used to calculate the height of x-pos.
     xPosHeight[xPos] = findMostSignificantBit(prevXPos)*2;
   }
-  /*
-  initialHeightMap bliver brugt til at bestemme hvor højt terrain skal være. Det bliver lavet ved at tage summen af fire indexes i initialHeightMap arrayet, og xor dem
-   med den tidligere x-pos. På den måde fås pænt terrain. Dette ganges med 2 for at lave højere bakker.
-   */
 
+  // Though the terrain is really rugged and needs some smoothing out.
+  // Therefore a weighted average is made from the two before and the two after the x-value.
+
+  // The two weighted values:
   float twoOutWeight = 0.2;
   float oneOutWeight = 0.8;
+
+  // The new heightMap.
   int[] heightMap = new int[64];
-  
+
+
+  // Iterate though all x-values and calculate the new heightMap.
   for (int xPos = 0; xPos < 64; xPos++) {
     int meanXPosHeight;
 
@@ -77,8 +88,12 @@ void setup() {
     } else {
       meanXPosHeight = int((xPosHeight[xPos - 2]*twoOutWeight + xPosHeight[xPos - 1]*oneOutWeight + xPosHeight[xPos] + xPosHeight[xPos + 1]*oneOutWeight + xPosHeight[xPos + 2]*twoOutWeight)/5);
     }
-    
+
     heightMap[xPos] = meanXPosHeight;
+
+    // While the heightmap is being made, the terrain is also getting built.
+    // It looks at the height at the specific x-value and sets the pixel to sky if the y-value is greater than the height.
+    // If the y-value is equal to the height then the pixel becomes grass, and if the y-value is less than the height the pixel becomes ground.
 
     for (int yPos = 0; yPos < 40; yPos++) {
       if (yPos > meanXPosHeight) {
@@ -91,58 +106,61 @@ void setup() {
       }
     }
   }
+
   // Goal spawning code:
   // There has been subtracted 2 pixels from each side. Therefore the total width of the spawning area is 60.
+
   int totalSpawnWidth = 60;
+
   // This needs to be split into equal sizes.
-  int spawnWidth = totalSpawnWidth/amountOfGoalsLeft;
-  
-  for (int i = 0; i < amountOfGoalsLeft; i++){
-   
-   int randomXValue = 2+int(random(i*spawnWidth,(i+1)*spawnWidth));
-   int randomYValue = 38-int(random(1,heightMap[randomXValue]));
-   
-   worldOne[randomXValue][randomYValue] = new World("goal");
+  int spawnWidth = totalSpawnWidth/amountOfGoalsLeft; //Therefore the number between 1 and 6 mentioned in setup because those numbers divide 60 cleanly.
+
+  // Creates a goal in the selected chunk randomly.
+  for (int i = 0; i < amountOfGoalsLeft; i++) {
+
+    int randomXValue = 2+int(random(i*spawnWidth, (i+1)*spawnWidth));
+    int randomYValue = 38-int(random(1, heightMap[randomXValue]));
+
+    worldOne[randomXValue][randomYValue] = new World("goal");
   }
 
-  /*
-for (int xline = squaresize; xline<width; xline+=squaresize) {
-   line(xline, 0, xline, height);
-   }
-   for (int yline = squaresize; yline<height; yline+=squaresize) {
-   line(0, yline, width, yline);
-   }
-   */
-
-  frameRate(10);
   println("Finished setup @: " + millis());
 }
 
 void draw() {
+  // Making sure the player is not out of the map.
   if (player.yPos<worldOne[0].length-1) {
+    // If the player is flying move the player down.
     if (worldOne[player.xPos][player.yPos+1].type == "sky") {
-      player.action(false);
-      player.yPos = player.yPos+1;
-    } else {
+      player.action(false); // Make sure the player cannot shoot.
+      player.yPos = player.yPos+1; //Move the player down.
+    } else { // If the player is not flying, the player can shoot.
       player.action(true);
     }
   } else {
+    // If the player is not in the map. Kill the player.
     player.health = 0;
   }
   if (player.isDead()) {
-    // Skal ændres.
+    // Make the background red to show that the player is dead. Also write that in text.
     background(255, 0, 0);
+    fill(255);
+    textSize(40);
+    text("You died, try again", width/2, height/2);
+    textSize(20);
+    text("Womp Womp :(", width/2, height/2 + 40);
   } else {
-
+    // If the player is not dead. Draw every pixel.
     for (int xPos = 0; xPos < worldOne.length; xPos++) {
       for (int yPos = 0; yPos < worldOne[0].length; yPos++) {
         worldOne[xPos][yPos].draw(xPos, yPos, squaresize);
       }
     }
-
+    // If the player has shot there are projectiles in the projectilePosisions arraylist and it has to be drawn.
     if (player.projectilePositions.size() > 0) {
-      if (player.projectilePositions.size() == 1) {
+      if (player.projectilePositions.size() == 1) { // If its the last shot.
 
+        // Get the coordinates of where the shots hits.
         int hitX = int(player.projectilePositions.get(0).x/10);
         int hitY = int(player.projectilePositions.get(0).y/10);
 
@@ -150,15 +168,8 @@ void draw() {
         println("hitting");
         println(hitX);
         println(hitY);
-        
-        if (hitX > 63 && hitX < -1) {
 
-
-          if (hitY < 39) {
-            println(worldOne[hitX][hitY].type);
-          }
-        }
-
+        // Takes the eight pixels around the pixel that has been hit and turns them into sky
         for (int x = -1; x < 2; x++) {
           for (int y = -1; y < 2; y++) {
             if (hitY+y > 39) {
@@ -169,41 +180,31 @@ void draw() {
             }
           }
         }
-
+        // Clear the arraylist because the last pixel in the shot has been drawn.
         player.projectilePositions.clear();
-      } else {
-        //println("Topelse");
-        //println(player.projectilePositions.size());
-        fill(0);
-        for (PVector pos : player.projectilePositions) {
-          //println(pos);
-        }
+      } else { // If the pixel is not the last pixel in the arraylist and therefore just showing the bullet path.
+
+        // Draw the bullet pixel
         player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
         //println(player.projectilePositions.get(0).x);
-        //println(player.projectilePositions.get(0).y);
-        //println(player.projectilePositions.size());
         player.projectilePositions.remove(0);
-        //println(player.projectilePositions.size());
       }
-    }
-
-    if (player.isShooting) {
-      fill(0);
-
-      //player.projectilePositions.remove(0);
-
-      //for (PVector pos : player.projectilePositions) {
-      //println(pos.x + " : " + pos.y);
-      //  player.draw(pos.x, pos.y); // tegn firkant
-      //}
     }
     player.draw();
   }
-  if (amountOfGoalsLeft == 0){
-   println("YOU WIN :D"); 
+  // The win condition
+  if (amountOfGoalsLeft == 0) {
+    background(255, 255, 0);
+    fill(0);
+    textSize(40);
+    text("You have won the game", width/2, height/2);
+    textSize(20);
+    text("Well done :D", width/2, height/2 + 40);
   }
 }
 
+
+// HAJE code for checking what key on the keyboard is pressed. 
 void keyPressed() {
   if (key == CODED) {
     //print("Code: " + keyCode + ". ");

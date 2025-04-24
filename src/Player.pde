@@ -6,33 +6,20 @@
 
 class Player extends WorldObject {
 
-  int xPos = int(random(4, 59));
-  int yPos = 20;
+  int xPos = int(random(4, 59)); // Spawns the player in a random position.
+  int yPos = 20; // Spawns the player well above the surface.
   float angle = 85.0/360*2*PI;
-  boolean shootingDirection = false;
+  boolean shootingDirection = false; // Sets the shooting direction to right.
 
-
-  float g = 10; //Tyngdekraften
-  float v0 = 40; //Initialhastigheden
+  float g = 10; // Gravity
+  float v0 = 40; // The intial speed
   ArrayList<PVector> projectilePositions = new ArrayList<PVector>();
-  ArrayList<PVector> projectileTrails = new ArrayList<PVector>();
-  boolean isShooting = false;
 
-  Player() {
-    super();
+  Player() { // Player constructor.
+    super(); // Runs the WorldObject constructor. 
     worldObjectColor = color(255, 0, 0);
   }
-  Player(boolean tempblocked) {
-    super(tempblocked);
-    worldObjectColor = color(255, 0, 0);
-  }
-  void moveForward() {
-    print(place + " : " + direction);
-    if (int(place.y+direction.y)>0 && int(place.x+direction.x)>0) {
-      place.add(direction);
-      println(" .Now: " + place);
-    }
-  }
+  
   void draw() {
     float y;
 
@@ -50,6 +37,7 @@ class Player extends WorldObject {
         draw(i*10+xPos*10, y+yPos*10);
       }
     } else if (angle > 1.60) {
+
       for (int i = 0; i > -5; i -= 1) {
 
         y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(i, 2)+tan(angle)*i;
@@ -111,7 +99,7 @@ class Player extends WorldObject {
           //projectilePositions.add(new PVector((64-x*10+xPos*10-65), (39-yIndex)*10-(40-yPos)*10));
           projectilePositions.add(new PVector(((-x+xPos)*10), ((39-yIndex)-(40-yPos))*10));
           try {
-            if(worldOne[-x + xPos][39-yIndex-(40-yPos)].type != "sky"){
+            if (worldOne[-x + xPos][39-yIndex-(40-yPos)].type != "sky") {
               break;
             }
           }
@@ -130,14 +118,10 @@ class Player extends WorldObject {
   void action(boolean availableToDoAction) {
 
     if (downKeys[32]) { // 32 = Space
-      if (availableToDoAction == true && !isShooting) {
-
-        isShooting = true;
+      if (availableToDoAction == true) {
         projectilePositions.clear(); // Ryd tidligere projektiler
         shoot();
-      } else {
-        isShooting = false;
-      }
+      } 
     }
 
     if (downCodedKeys[38]) { // 38 = up arrow.
