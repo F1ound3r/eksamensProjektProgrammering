@@ -1,7 +1,7 @@
 // My own code taken from my SOP assignment. 
 // Therefore the comments are in danish. 
 
-int[] calculateRoundKey256(int[] inputList) {
+int[] calculateRoundKey256(int[] inputList) { // AES256 key expansion.
   int antalRunder = 15;
   
   int[] expandedKey = new int[(antalRunder+1)*16]; //Laver den udvidede nøgle med den korrekte størrelse.

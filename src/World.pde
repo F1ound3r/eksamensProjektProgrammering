@@ -9,9 +9,8 @@ class World {
   boolean passable, destructible;
   color worldColor;
   String type;
-  PVector place = new PVector(1, 1);
 
-  World(String inputType) { // Constructor that takes the objects type to make the correct object. 
+  World(String inputType) { // Constructor that takes the objects type to make the correct object.
     health = 10;
     type = inputType;
     if (inputType == "sky") {
@@ -26,6 +25,9 @@ class World {
     } else if (inputType == "goal") {
       worldColor = color(255, 255, 0);
       passable = false;
+    } else if (inputType == "player") {
+      worldColor = color(255, 0, 0);
+      passable = false;
     }
   }
   void beenHit(String inputType) {
@@ -36,15 +38,15 @@ class World {
     // When that has been noted the changing of the type can resume.
     // New if statement because the code above has to be run every time if its a goal, and the code below.
 
-    if (type != "sky") { // Making sure sky objects are not made to sky objects again. 
-    // Also implemented the posibility to have different kinds of ammo that regenerate soil again. 
-    // Thats the reason for checking the inputType and not just making it sky.
+    if (type != "sky") { // Making sure sky objects are not made to sky objects for optimisation purposes. 
+      // Also implemented the posibility to have different kinds of ammo that regenerate soil again.
+      // Thats the reason for checking the inputType and not just making it sky by default.
       type = inputType;
       if (inputType == "sky") {
         worldColor = color(38, 184, 250);
         passable = true;
       }
-      // Make else if statements here to spawn other objects. 
+      // Make else if statements here to spawn other objects.
     }
   }
   void draw(int tempXdir, int tempYdir, int tempSquaresize) {
@@ -54,6 +56,6 @@ class World {
   }
   void draw() {
     fill(worldColor);
-    square(place.x*squaresize, place.y*squaresize, squaresize);
+    square(squaresize, squaresize, squaresize);
   }
 }

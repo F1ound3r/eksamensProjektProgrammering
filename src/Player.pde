@@ -4,39 +4,36 @@
 //
 // Link: https://github.com/haje-aatg/2DTemplateSideScroller
 
-class Player {
+class Player extends World {
 
   int xPos, yPos, g, v0;
-
   float angle;
   boolean shootingDirection = false; // Sets the shooting direction to right.
 
   ArrayList<PVector> projectilePositions = new ArrayList<PVector>(); // Arraylist to store where the projectile is going.
 
-  byte squaresize, health; // Only needs to be a byte because it will not exceed 255.
-  color worldObjectColor; // Color of the player.
 
   Player() { // Player constructor.
-    super(); // Runs the WorldObject constructor.
+
+    super("player"); // Calling the world constructor to create the player.
 
     xPos = int(random(4, 59)); // Spawns the player in a random position.
     yPos = 20; // Spawns the player well above the surface.
     g = 10; // Gravity
     v0 = 40; // The initial speed
     angle = 85.0/360*2*PI;
-    squaresize = 10;
-    health = byte(random(10, 20));
-    worldObjectColor = color(255, 0, 0);
   }
 
   void draw() { // Player draw function.
     float y;
 
-    if (angle < 1.53) { // Showing the first 5 positions of the shot to the right.
+    if (angle < PI/2) { // Showing the first 5 positions of the shot to the right.
       for (int i = 0; i < 5; i += 1) {
 
         y = (-g)/(2*pow(v0, 2)*pow(cos(angle), 2))*pow(i, 2)+tan(angle)*i; // Calculating the parabola.
 
+        // The pixel size is 10. So divided by 10 round to that number and the multiply.
+        // If it was y = round(y) 93.3 would become 93 and not 90. Therefore 93.3/10.0 = 9.33 would be rounded to 9 and then 90.  
         y = round(y / 10.0) * 10; // Rounding to the nearest pixel.
 
         y *= -1; // Inverting the shot because the y-axis is inverted.
@@ -45,7 +42,7 @@ class Player {
 
         draw(i*10+xPos*10, y+yPos*10);
       }
-    } else if (angle > 1.60) { // Showing the first 5 positions of the shot to the left.
+    } else if (angle > PI/2) { // Showing the first 5 positions of the shot to the left.
 
       for (int i = 0; i > -5; i -= 1) {
 
@@ -54,26 +51,21 @@ class Player {
         y *= -1; // Inverting the shot because the y-axis is inverted.
 
         y = round(y / 10.0) * 10; // Rounding to the nearest pixel.
-
+        
         draw(i*10+xPos*10, y+yPos*10);
       }
     }
 
-    fill(worldObjectColor);
-    if (worldOne[player.xPos][player.yPos].type != "sky") { // If the player is flying move the player down.
-      player.yPos -= 1;
-    }
     // Draw the player.
+    fill(worldColor);
     square(player.xPos*squaresize, player.yPos*squaresize, squaresize);
-    
-    // Drawing information about the intial speed and the angle.
-    
+
+    // Drawing information about the intial speed and the angle to the player.
     fill(0);
     textAlign(LEFT, TOP);
     textSize(20);
     text("The angle is: " + int(angle*180/PI), 10, 10);
     text("The intial speed is: " + v0, 10, 30);
-    
   }
 
   void draw(float x, float y) { // Function to draw the projectiles.
@@ -173,11 +165,15 @@ class Player {
         }
       }
     }
-    if (downCodedKeys[33]){ // Page up.
-     v0 -= 1;
+    if (downCodedKeys[33]) { // Page up.
+      if (v0 > 20) {
+        v0 -= 1; // Decrease the initial speed.
+      }
     }
-    if (downCodedKeys[34]){ // Page up.
-     v0 += 1;
+    if (downCodedKeys[34]) { // Page down.
+      if (v0 < 70) {
+        v0 += 1; // Increase the initial speed. 
+      }
     }
   }
 

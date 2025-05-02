@@ -1,7 +1,4 @@
 /*
-
- Koden er bygget op med udgangspunkt i taget kode fra:
- 
  The code is build from:
  
  SideScroller by haje-aatg (Hans-ChristianBJensen)
@@ -11,11 +8,13 @@
  Link: https://github.com/haje-aatg/2DTemplateSideScroller
  
  There has also been written own code, and used some code from SOP. That code is in the file seedGenerator, and is also credited in that file.
- 
+ */
+/*
+The keybinds are the arrow keys, page up + page down and the spacebar.
  */
 
 World[][] worldOne;
-Player player = new Player();
+Player player;
 int squaresize, amountOfGoalsLeft;
 boolean[] downKeys = new boolean[256];
 boolean[] downCodedKeys = new boolean[256];
@@ -31,18 +30,19 @@ void setup() {
   frameRate(15);
   squaresize = 10;
   noStroke(); // Removes the outlines from squares.
-  amountOfGoalsLeft = 1; // Between 1 and 6. If any other number there can appear spawn bugs. IE goals can spawn atop of eachother and its not possible to win.
+  amountOfGoalsLeft = 3; // Between 1 and 6. If any other number there can appear spawn bugs. IE goals can spawn atop of eachother and its not possible to win.
   // Koordinatsystemet starter øverst til venstre i (0,0).
   worldOne = new World[64][40];  //x , y
-
-  //println("World size is: " + worldOne.length + " in x direction &: " + worldOne[0].length + " in y direction");
+  player = new Player();
 
   // Generating the 32 random numbers for the seed.
+  // If wanting to optimize these bits of code they could easily be bits instead of integers. IE they are only 0-255.
   int[] seed = new int[32];
   for (int i = 0; i < seed.length; i++) {
     seed[i] = int(random(255));
   }
   // Expanding the seed to get the initial heightmap.
+  // Uses the AES256 key expansion to expand the random numbers.
   int[] initialHeightMap = calculateRoundKey256(seed);
 
 
@@ -122,12 +122,11 @@ void setup() {
 
     worldOne[randomXValue][randomYValue] = new World("goal");
   }
-
   println("Finished setup @: " + millis());
 }
 
 void draw() {
-  // Making sure the player is not out of the map.
+  // Making sure the player is not out of the map. (The bottom).
   if (player.yPos<worldOne[0].length-1) {
     // If the player is flying move the player down.
     if (worldOne[player.xPos][player.yPos+1].type == "sky") {
@@ -150,24 +149,22 @@ void draw() {
     textSize(20);
     text("Womp Womp :(", width/2, height/2 + 40);
   } else {
-    // If the player is not dead. Draw every pixel.
+    // If the player is not dead. Draw every pixel of the world.
     for (int xPos = 0; xPos < worldOne.length; xPos++) {
       for (int yPos = 0; yPos < worldOne[0].length; yPos++) {
         worldOne[xPos][yPos].draw(xPos, yPos, squaresize);
       }
     }
-    // If the player has shot there are projectiles in the projectilePosisions arraylist and it has to be drawn.
+    // If the player has shot there are projectiles in the projectilePosisions arraylist and it therefore has to be drawn.
     if (player.projectilePositions.size() > 0) {
-      if (player.projectilePositions.size() == 1) { // If its the last shot.
+      if (player.projectilePositions.size() == 1) { // If its the last pixel in the shot it is going to be hitting the ground.
+        
+        // Draw the last bullet before removing the terrain.
+        player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
 
         // Get the coordinates of where the shots hits.
         int hitX = int(player.projectilePositions.get(0).x/10);
         int hitY = int(player.projectilePositions.get(0).y/10);
-
-        // Sætter dem ved siden af til at være sky for at vise at noget er gået i stykker.
-        println("hitting");
-        println(hitX);
-        println(hitY);
 
         // Takes the eight pixels around the pixel that has been hit and turns them into sky
         for (int x = -1; x < 2; x++) {
@@ -182,11 +179,12 @@ void draw() {
         }
         // Clear the arraylist because the last pixel in the shot has been drawn.
         player.projectilePositions.clear();
-      } else { // If the pixel is not the last pixel in the arraylist and therefore just showing the bullet path.
+      } else { // If the bullet pixel is not the last pixel in the arraylist and therefore just showing the bullet path.
 
         // Draw the bullet pixel
         player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
-        //println(player.projectilePositions.get(0).x);
+        
+        // Remove the first index in the arraylist. 
         player.projectilePositions.remove(0);
       }
     }
