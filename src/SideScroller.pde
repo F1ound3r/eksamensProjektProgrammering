@@ -132,8 +132,6 @@ void draw() {
     if (worldOne[player.xPos][player.yPos+1].type == "sky") {
       player.action(false); // Make sure the player cannot shoot.
       player.yPos = player.yPos+1; //Move the player down.
-    } else { // If the player is not flying, the player can shoot.
-      player.action(true);
     }
   } else {
     // If the player is not in the map. Kill the player.
@@ -157,8 +155,8 @@ void draw() {
     }
     // If the player has shot there are projectiles in the projectilePosisions arraylist and it therefore has to be drawn.
     if (player.projectilePositions.size() > 0) {
+      player.action(false);
       if (player.projectilePositions.size() == 1) { // If its the last pixel in the shot it is going to be hitting the ground.
-        
         // Draw the last bullet before removing the terrain.
         player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
 
@@ -179,15 +177,18 @@ void draw() {
         }
         // Clear the arraylist because the last pixel in the shot has been drawn.
         player.projectilePositions.clear();
+        player.action(true);
       } else { // If the bullet pixel is not the last pixel in the arraylist and therefore just showing the bullet path.
 
         // Draw the bullet pixel
         player.draw(player.projectilePositions.get(0).x, player.projectilePositions.get(0).y);
-        
         // Remove the first index in the arraylist. 
         player.projectilePositions.remove(0);
       }
+    } else {
+     player.action(true); 
     }
+    
     player.draw();
   }
   // The win condition

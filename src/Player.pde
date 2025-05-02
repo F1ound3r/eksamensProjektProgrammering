@@ -8,7 +8,8 @@ class Player extends World {
 
   int xPos, yPos, g, v0;
   float angle;
-  boolean shootingDirection = false; // Sets the shooting direction to right.
+  boolean shootingDirection; // Sets the shooting direction to right.
+  boolean action; // Can or cannot shoot.
 
   ArrayList<PVector> projectilePositions = new ArrayList<PVector>(); // Arraylist to store where the projectile is going.
 
@@ -22,6 +23,8 @@ class Player extends World {
     g = 10; // Gravity
     v0 = 40; // The initial speed
     angle = 85.0/360*2*PI;
+    shootingDirection = false;
+    action = false;
   }
 
   void draw() { // Player draw function.
@@ -119,9 +122,11 @@ class Player extends World {
     }
   }
   void action(boolean availableToDoAction) {
-
+    
+    action = availableToDoAction;
+    
     if (downKeys[32]) { // 32 = Space
-      if (availableToDoAction == true) {
+      if (action == true) {
         projectilePositions.clear(); // Makes sure the arraylist is empty before making the shooting calculations.
         shoot();
       }
